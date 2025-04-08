@@ -9,6 +9,16 @@
         android:id="@+id/loginFragment"
         android:name="dev.rao.rockmarket.auth.login.presentation.LoginFragment"
         android:label="Login"
-        tools:layout="@layout/fragment_login" />
+        tools:layout="@layout/fragment_login">
+        <action
+            android:id="@+id/action_login_to_country_selection"
+            app:destination="@id/countrySelectionFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/countrySelectionFragment"
+        android:name="dev.rao.rockmarket.country.presentation.CountrySelectionFragment"
+        android:label="CountrySelectionFragment"
+        tools:layout="@layout/fragment_country_selection" />
 
 </navigation>

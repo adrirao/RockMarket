@@ -11,6 +11,7 @@ import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.ApiException
@@ -117,7 +118,7 @@ class LoginFragment : Fragment() {
     }
 
     private fun navigateToCountrySelection() {
-        /* TODO: Navigate to country selection screen */
+        findNavController().navigate(R.id.action_login_to_country_selection)
     }
 
     override fun onDestroyView() {
