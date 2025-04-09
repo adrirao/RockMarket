@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Cuando la card está presionada, reducimos la elevación -->
+    <item android:state_pressed="true">
+        <objectAnimator
+            android:duration="100"
+            android:propertyName="translationZ"
+            android:valueTo="0dp"
+            android:valueType="floatType" />
+    </item>
+    <!-- Cuando la card no está presionada, restauramos la elevación -->
+    <item>
+        <objectAnimator
+            android:duration="100"
+            android:propertyName="translationZ"
+            android:valueTo="2dp"
+            android:valueType="floatType" />
+    </item>
+</selector> 
