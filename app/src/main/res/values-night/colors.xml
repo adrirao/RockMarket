@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorBackground">#000000</color>
+    <color name="colorBackground">#00000000</color>
     <color name="neu_background">#2D3436</color>
     <color name="neu_shadow_dark">#1A1D1E</color>
     <color name="neu_shadow_light">#404B4D</color>
