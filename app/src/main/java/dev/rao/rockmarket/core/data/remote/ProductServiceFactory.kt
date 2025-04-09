@@ -1,4 +1,4 @@
-package dev.rao.rockmarket.home.data.remote
+package dev.rao.rockmarket.core.data.remote
 
 import javax.inject.Inject
 

@@ -61,10 +61,9 @@ import androidx.navigation.fragment.findNavController
 import coil.compose.rememberAsyncImagePainter
 import dagger.hilt.android.AndroidEntryPoint
 import dev.rao.rockmarket.R
-import dev.rao.rockmarket.home.domain.model.Product
+import dev.rao.rockmarket.core.domain.model.Product
 import dev.rao.rockmarket.home.presentation.components.NeumorphicButton
 import dev.rao.rockmarket.home.presentation.components.NeumorphicCard
-import dev.rao.rockmarket.home.presentation.components.NeumorphicSurface
 import dev.rao.rockmarket.home.presentation.theme.NeuColors
 import dev.rao.rockmarket.home.presentation.theme.RockMarketTheme
 import dev.rao.rockmarket.home.util.truncateWithEllipsis
@@ -132,84 +131,85 @@ class HomeFragment : Fragment() {
     ) {
         var showMenu by remember { mutableStateOf(false) }
 
-        NeumorphicSurface(
+        /*NeumorphicSurface(
             modifier = Modifier.fillMaxSize(),
-        ) {
-            Scaffold(
-                containerColor = Color.Transparent,
-                topBar = {
-                    TopAppBar(
-                        title = {
-                            Text(
-                                "MarketRock",
-                                color = NeuColors.text,
-                                style = MaterialTheme.typography.headlineMedium
-                            )
-                        },
-                        colors = TopAppBarDefaults.topAppBarColors(
-                            containerColor = Color.Transparent
-                        ),
-                        actions = {
-                            IconButton(onClick = { showMenu = true }) {
-                                Icon(
-                                    imageVector = Icons.Default.MoreVert,
-                                    contentDescription = "Más opciones",
-                                    tint = NeuColors.text
-                                )
-                            }
-                            DropdownMenu(
-                                expanded = showMenu,
-                                onDismissRequest = { showMenu = false }
-                            ) {
-                                DropdownMenuItem(
-                                    text = {
-                                        Text(
-                                            "Cerrar sesión",
-                                            color = NeuColors.text
-                                        )
-                                    },
-                                    onClick = {
-                                        showMenu = false
-                                        onLogout()
-                                    }
-                                )
-                            }
-                        }
-                    )
-                },
-                floatingActionButton = {
-                    NeumorphicButton(
-                        onClick = onScanQr,
-                        cornerRadius = 28.dp,
-                        elevation = 12.dp,
-                        modifier = Modifier
-                            .size(56.dp)
-                            .align(Alignment.Center),
-                        background = NeuColors.text
-                    ) {
-                        Box(
-                            modifier = Modifier
-                                .fillMaxSize(),
-                            contentAlignment = Alignment.Center
-                        ) {
+        ) {*/
+        Scaffold(
+            containerColor = Color.Transparent,
+            topBar = {
+                TopAppBar(
+                    title = {
+                        Text(
+                            "MarketRock",
+                            color = NeuColors.text,
+                            style = MaterialTheme.typography.headlineMedium
+                        )
+                    },
+                    colors = TopAppBarDefaults.topAppBarColors(
+                        containerColor = Color.Transparent
+                    ),
+                    actions = {
+                        IconButton(onClick = { showMenu = true }) {
                             Icon(
-                                imageVector = Icons.Outlined.QrCodeScanner,
-                                contentDescription = "Escanear QR",
-                                tint = NeuColors.background,
-                                modifier = Modifier.size(24.dp),
+                                imageVector = Icons.Default.MoreVert,
+                                contentDescription = "Más opciones",
+                                tint = NeuColors.text
+                            )
+                        }
+                        DropdownMenu(
+                            expanded = showMenu,
+                            onDismissRequest = { showMenu = false }
+                        ) {
+                            DropdownMenuItem(
+                                text = {
+                                    Text(
+                                        "Cerrar sesión",
+                                        color = NeuColors.text
+                                    )
+                                },
+                                onClick = {
+                                    showMenu = false
+                                    onLogout()
+                                }
                             )
                         }
                     }
-                },
-                content = { paddingValues ->
-                    HomeContent(
-                        state = state,
-                        products = products,
-                        modifier = Modifier.padding(paddingValues)
-                    )
+                )
+            },
+            floatingActionButton = {
+                NeumorphicButton(
+                    onClick = onScanQr,
+                    cornerRadius = 28.dp,
+                    elevation = 12.dp,
+                    modifier = Modifier
+                        .size(56.dp),
+                    background = NeuColors.text
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxSize(),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Icon(
+                            imageVector = Icons.Outlined.QrCodeScanner,
+                            contentDescription = "Escanear QR",
+                            tint = NeuColors.background,
+                            modifier = Modifier.size(24.dp),
+                        )
+                    }
                 }
-            )
-        }
+            },
+            content = { paddingValues ->
+                HomeContent(
+                    state = state,
+                    products = products,
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(top = paddingValues.calculateTopPadding())
+                )
+            }
+        )
+        /*}*/
     }
 
     @Composable
@@ -219,9 +219,7 @@ class HomeFragment : Fragment() {
         modifier: Modifier = Modifier
     ) {
         Column(
-            modifier = modifier
-                .fillMaxSize()
-                .padding(5.dp),
+            modifier = modifier,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             when (state) {

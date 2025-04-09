@@ -1,6 +1,6 @@
-package dev.rao.rockmarket.home.data.remote
+package dev.rao.rockmarket.core.data.remote
 
-import dev.rao.rockmarket.home.domain.model.Product
+import dev.rao.rockmarket.core.domain.model.Product
 
 interface ProductService {
     suspend fun getProducts(): List<Product>

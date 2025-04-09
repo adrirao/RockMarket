@@ -1,9 +1,9 @@
-package dev.rao.rockmarket.home.data.remote.mapper
+package dev.rao.rockmarket.core.data.remote.mapper
 
-import dev.rao.rockmarket.home.data.remote.dto.PlatziProductDto
-import dev.rao.rockmarket.home.data.remote.dto.ProductDto
-import dev.rao.rockmarket.home.domain.model.Product
-import dev.rao.rockmarket.home.domain.model.Rating
+import dev.rao.rockmarket.core.data.remote.dto.PlatziProductDto
+import dev.rao.rockmarket.core.data.remote.dto.ProductDto
+import dev.rao.rockmarket.core.domain.model.Product
+import dev.rao.rockmarket.core.domain.model.Rating
 
 fun ProductDto.toProduct(): Product {
     return Product(

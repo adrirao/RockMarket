@@ -1,7 +1,7 @@
-package dev.rao.rockmarket.home.data.remote
+package dev.rao.rockmarket.core.data.remote
 
-import dev.rao.rockmarket.home.data.remote.mapper.toProduct
-import dev.rao.rockmarket.home.domain.model.Product
+import dev.rao.rockmarket.core.data.remote.mapper.toProduct
+import dev.rao.rockmarket.core.domain.model.Product
 import javax.inject.Inject
 
 class PlatziService @Inject constructor(

@@ -1,6 +1,6 @@
-package dev.rao.rockmarket.home.data.remote
+package dev.rao.rockmarket.core.data.remote
 
-import dev.rao.rockmarket.home.data.remote.dto.ProductDto
+import dev.rao.rockmarket.core.data.remote.dto.ProductDto
 import retrofit2.http.GET
 
 interface FakeStoreApi {

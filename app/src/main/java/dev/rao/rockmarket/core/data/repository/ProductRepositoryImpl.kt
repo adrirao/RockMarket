@@ -1,8 +1,8 @@
-package dev.rao.rockmarket.home.data.repository
+package dev.rao.rockmarket.core.data.repository
 
-import dev.rao.rockmarket.home.data.remote.ProductServiceFactory
-import dev.rao.rockmarket.home.domain.model.Product
-import dev.rao.rockmarket.home.domain.repository.ProductRepository
+import dev.rao.rockmarket.core.data.remote.ProductServiceFactory
+import dev.rao.rockmarket.core.domain.model.Product
+import dev.rao.rockmarket.core.domain.repository.ProductRepository
 
 class ProductRepositoryImpl(
     private val productServiceFactory: ProductServiceFactory

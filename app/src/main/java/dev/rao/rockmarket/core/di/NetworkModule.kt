@@ -1,4 +1,4 @@
-package dev.rao.rockmarket.home.di
+package dev.rao.rockmarket.core.di
 
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
@@ -6,13 +6,13 @@ import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
-import dev.rao.rockmarket.home.data.remote.FakeStoreApi
-import dev.rao.rockmarket.home.data.remote.FakeStoreService
-import dev.rao.rockmarket.home.data.remote.PlatziApi
-import dev.rao.rockmarket.home.data.remote.PlatziService
-import dev.rao.rockmarket.home.data.remote.ProductServiceFactory
-import dev.rao.rockmarket.home.data.repository.ProductRepositoryImpl
-import dev.rao.rockmarket.home.domain.repository.ProductRepository
+import dev.rao.rockmarket.core.data.remote.FakeStoreApi
+import dev.rao.rockmarket.core.data.remote.FakeStoreService
+import dev.rao.rockmarket.core.data.remote.PlatziApi
+import dev.rao.rockmarket.core.data.remote.PlatziService
+import dev.rao.rockmarket.core.data.remote.ProductServiceFactory
+import dev.rao.rockmarket.core.data.repository.ProductRepositoryImpl
+import dev.rao.rockmarket.core.domain.repository.ProductRepository
 import dev.rao.rockmarket.home.domain.usecase.GetProductsUseCase
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
@@ -20,7 +20,6 @@ import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
 import javax.inject.Named
 import javax.inject.Singleton
-
 
 @Module
 @InstallIn(SingletonComponent::class)
@@ -52,7 +51,7 @@ object NetworkModule {
         moshi: Moshi
     ): Retrofit {
         return Retrofit.Builder()
-            .baseUrl(FakeStoreApi.BASE_URL)
+            .baseUrl(FakeStoreApi.Companion.BASE_URL)
             .client(okHttpClient)
             .addConverterFactory(MoshiConverterFactory.create(moshi).asLenient())
             .build()
@@ -66,7 +65,7 @@ object NetworkModule {
         moshi: Moshi
     ): Retrofit {
         return Retrofit.Builder()
-            .baseUrl(PlatziApi.BASE_URL)
+            .baseUrl(PlatziApi.Companion.BASE_URL)
             .client(okHttpClient)
             .addConverterFactory(MoshiConverterFactory.create(moshi).asLenient())
             .build()

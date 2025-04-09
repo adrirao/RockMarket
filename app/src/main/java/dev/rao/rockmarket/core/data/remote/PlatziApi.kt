@@ -1,6 +1,6 @@
-package dev.rao.rockmarket.home.data.remote
+package dev.rao.rockmarket.core.data.remote
 
-import dev.rao.rockmarket.home.data.remote.dto.PlatziProductDto
+import dev.rao.rockmarket.core.data.remote.dto.PlatziProductDto
 import retrofit2.http.GET
 
 interface PlatziApi {

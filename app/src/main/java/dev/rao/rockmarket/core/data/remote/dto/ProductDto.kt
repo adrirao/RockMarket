@@ -1,4 +1,4 @@
-package dev.rao.rockmarket.home.data.remote.dto
+package dev.rao.rockmarket.core.data.remote.dto
 
 import com.google.gson.annotations.SerializedName
 
