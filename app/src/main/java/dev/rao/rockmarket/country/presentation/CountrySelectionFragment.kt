@@ -9,7 +9,9 @@ import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
 import dagger.hilt.android.AndroidEntryPoint
+import dev.rao.rockmarket.R
 import dev.rao.rockmarket.databinding.FragmentCountrySelectionBinding
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -74,7 +76,7 @@ class CountrySelectionFragment : Fragment() {
     }
 
     private fun navigateToHome() {
-
+        findNavController().navigate(R.id.action_country_selection_to_home)
     }
 
     override fun onDestroyView() {

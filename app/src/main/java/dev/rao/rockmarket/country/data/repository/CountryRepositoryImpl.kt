@@ -30,10 +30,10 @@ class CountryRepositoryImpl @Inject constructor(
         } ?: Result.failure(Exception("País no encontrado"))
     }
 
-    override suspend fun saveSelectedCountry(country: Country): Result<Unit> {
+    override suspend fun saveSelectedCountry(country: Country?): Result<Unit> {
         return try {
             sharedPreferences.edit()
-                .putString(KEY_SELECTED_COUNTRY, gson.toJson(country))
+                .putString(KEY_SELECTED_COUNTRY, gson.toJson(country ?: ""))
                 .apply()
             Result.success(Unit)
         } catch (e: Exception) {
