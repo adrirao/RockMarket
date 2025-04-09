@@ -92,7 +92,6 @@ fun RockMarketTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
     content: @Composable () -> Unit
 ) {
-    // Actualizar colores neumórficos según el tema
     NeuColors.update(darkTheme)
 
     val colorScheme = if (darkTheme) DarkColorScheme else LightColorScheme
