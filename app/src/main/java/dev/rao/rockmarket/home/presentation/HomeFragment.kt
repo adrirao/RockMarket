@@ -29,6 +29,7 @@ import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.outlined.QrCodeScanner
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -61,12 +62,13 @@ import androidx.navigation.fragment.findNavController
 import coil.compose.rememberAsyncImagePainter
 import dagger.hilt.android.AndroidEntryPoint
 import dev.rao.rockmarket.R
-import dev.rao.rockmarket.home.domain.model.FeaturedProduct
+import dev.rao.rockmarket.home.domain.model.Product
 import dev.rao.rockmarket.home.presentation.components.NeumorphicButton
 import dev.rao.rockmarket.home.presentation.components.NeumorphicCard
 import dev.rao.rockmarket.home.presentation.components.NeumorphicSurface
 import dev.rao.rockmarket.home.presentation.theme.NeuColors
 import dev.rao.rockmarket.home.presentation.theme.RockMarketTheme
+import dev.rao.rockmarket.home.util.truncateWithEllipsis
 
 @AndroidEntryPoint
 class HomeFragment : Fragment() {
@@ -112,11 +114,11 @@ class HomeFragment : Fragment() {
         onScanQr: () -> Unit
     ) {
         val state by viewModel.state.collectAsStateWithLifecycle(initialValue = HomeState.Initial)
-        val featuredProducts by viewModel.featuredProducts.collectAsStateWithLifecycle(initialValue = emptyList())
+        val products by viewModel.products.collectAsStateWithLifecycle(initialValue = emptyList())
 
         HomeScreenContent(
             state = state,
-            featuredProducts = featuredProducts,
+            products = products,
             onLogout = onLogout,
             onScanQr = onScanQr
         )
@@ -126,7 +128,7 @@ class HomeFragment : Fragment() {
     @Composable
     fun HomeScreenContent(
         state: HomeState,
-        featuredProducts: List<FeaturedProduct>,
+        products: List<Product>,
         onLogout: () -> Unit,
         onScanQr: () -> Unit
     ) {
@@ -204,7 +206,7 @@ class HomeFragment : Fragment() {
                 content = { paddingValues ->
                     HomeContent(
                         state = state,
-                        featuredProducts = featuredProducts,
+                        products = products,
                         modifier = Modifier.padding(paddingValues)
                     )
                 }
@@ -215,7 +217,7 @@ class HomeFragment : Fragment() {
     @Composable
     fun HomeContent(
         state: HomeState,
-        featuredProducts: List<FeaturedProduct>,
+        products: List<Product>,
         modifier: Modifier = Modifier
     ) {
         Column(
@@ -249,7 +251,7 @@ class HomeFragment : Fragment() {
                                 color = NeuColors.text,
                             )
                             Text(
-                                text = if (country.id == "0") "AR" else "BR",
+                                text = country.id,
                                 style = MaterialTheme.typography.titleSmall,
                                 fontWeight = FontWeight.Bold,
                                 color = NeuColors.text,
@@ -257,7 +259,7 @@ class HomeFragment : Fragment() {
                         }
 
                         Spacer(modifier = Modifier.height(8.dp))
-                        FeaturedProductsBanner(featuredProducts)
+                        ProductsBanner(products)
                     } else {
                         Text(
                             text = "No se ha seleccionado ningún país",
@@ -279,20 +281,25 @@ class HomeFragment : Fragment() {
     }
 
     @Composable
-    fun FeaturedProductsBanner(products: List<FeaturedProduct>) {
+    fun ProductsBanner(products: List<Product>) {
         if (products.isEmpty()) {
-            NeumorphicCard(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(220.dp)
+            Box(
+                modifier = Modifier.fillMaxSize(),
+                contentAlignment = Alignment.Center
             ) {
-                Box(
-                    contentAlignment = Alignment.Center
+
+                Column(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalArrangement = Arrangement.spacedBy(20.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Text(
                         text = "Cargando productos...",
                         style = MaterialTheme.typography.bodyLarge,
                         color = NeuColors.text
+                    )
+                    CircularProgressIndicator(
+                        color = NeuColors.accent
                     )
                 }
             }
@@ -310,7 +317,7 @@ class HomeFragment : Fragment() {
     }
 
     @Composable
-    fun FeaturedProductItem(product: FeaturedProduct, onClick: () -> Unit) {
+    fun FeaturedProductItem(product: Product, onClick: () -> Unit) {
         var isFavorite by rememberSaveable { mutableStateOf(false) }
         val interactionSource = remember { MutableInteractionSource() }
 
@@ -330,7 +337,7 @@ class HomeFragment : Fragment() {
                 ) {
                     Image(
                         painter = rememberAsyncImagePainter(product.imageUrl),
-                        contentDescription = product.name,
+                        contentDescription = product.title,
                         contentScale = ContentScale.Crop,
                         modifier = Modifier
                             .fillMaxSize()
@@ -374,7 +381,7 @@ class HomeFragment : Fragment() {
                     verticalArrangement = Arrangement.spacedBy(4.dp)
                 ) {
                     Text(
-                        text = product.name,
+                        text = product.title.truncateWithEllipsis(),
                         style = MaterialTheme.typography.bodyMedium,
                         fontWeight = FontWeight.Bold,
                         maxLines = 2,

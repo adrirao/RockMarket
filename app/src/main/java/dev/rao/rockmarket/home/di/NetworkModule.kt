@@ -13,6 +13,7 @@ import dev.rao.rockmarket.home.data.remote.PlatziService
 import dev.rao.rockmarket.home.data.remote.ProductServiceFactory
 import dev.rao.rockmarket.home.data.repository.ProductRepositoryImpl
 import dev.rao.rockmarket.home.domain.repository.ProductRepository
+import dev.rao.rockmarket.home.domain.usecase.GetProductsUseCase
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
@@ -97,4 +98,10 @@ object NetworkModule {
     fun provideProductRepository(
         productServiceFactory: ProductServiceFactory
     ): ProductRepository = ProductRepositoryImpl(productServiceFactory)
+
+    @Provides
+    @Singleton
+    fun provideGetProductsUseCase(
+        productRepository: ProductRepository
+    ): GetProductsUseCase = GetProductsUseCase(productRepository)
 }

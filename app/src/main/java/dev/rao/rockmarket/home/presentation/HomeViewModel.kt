@@ -7,7 +7,8 @@ import dev.rao.rockmarket.auth.login.domain.usecase.SignOutUseCase
 import dev.rao.rockmarket.country.domain.model.Country
 import dev.rao.rockmarket.country.domain.usecase.GetSelectedCountryUseCase
 import dev.rao.rockmarket.country.domain.usecase.SaveSelectedCountryUseCase
-import dev.rao.rockmarket.home.domain.model.FeaturedProduct
+import dev.rao.rockmarket.home.domain.model.Product
+import dev.rao.rockmarket.home.domain.usecase.GetProductsUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -18,14 +19,15 @@ import javax.inject.Inject
 class HomeViewModel @Inject constructor(
     private val getSelectedCountryUseCase: GetSelectedCountryUseCase,
     private val saveSelectedCountryUseCase: SaveSelectedCountryUseCase,
-    private val signOutUseCase: SignOutUseCase
+    private val signOutUseCase: SignOutUseCase,
+    private val getProductsUseCase: GetProductsUseCase
 ) : ViewModel() {
 
     private val _state = MutableStateFlow<HomeState>(HomeState.Initial)
     val state: StateFlow<HomeState> = _state.asStateFlow()
 
-    private val _featuredProducts = MutableStateFlow<List<FeaturedProduct>>(emptyList())
-    val featuredProducts: StateFlow<List<FeaturedProduct>> = _featuredProducts.asStateFlow()
+    private val _products = MutableStateFlow<List<Product>>(emptyList())
+    val products: StateFlow<List<Product>> = _products.asStateFlow()
 
     init {
         loadSelectedCountry()
@@ -51,83 +53,13 @@ class HomeViewModel @Inject constructor(
     }
 
     private fun loadFeaturedProducts(country: Country) {
-        val products = when (country.id) {
-            "0" -> getMockFeaturedProductsForCountryA()
-            "1" -> getMockFeaturedProductsForCountryB()
-            else -> emptyList()
+        viewModelScope.launch {
+            getProductsUseCase(country.id).onSuccess {
+                _products.value = it
+            }.onFailure {
+                _state.value = HomeState.Error(it.message ?: "Error desconocido")
+            }
         }
-
-        _featuredProducts.value = products
-    }
-
-    private fun getMockFeaturedProductsForCountryA(): List<FeaturedProduct> {
-        return listOf(
-            FeaturedProduct(
-                "1",
-                "Smartphone Galaxy S21",
-                799.99,
-                "https://img.pacifiko.com/PROD/resize/1/1000x1000/YWU1YzEzY2_4.jpg"
-            ),
-            FeaturedProduct(
-                "2",
-                "Audífonos Bluetooth",
-                59.99,
-                "https://img.pacifiko.com/PROD/resize/1/1000x1000/YWU1YzEzY2_4.jpg"
-            ),
-            FeaturedProduct(
-                "3",
-                "Laptop Pro 15",
-                1299.99,
-                "https://img.pacifiko.com/PROD/resize/1/1000x1000/YWU1YzEzY2_4.jpg"
-            ),
-            FeaturedProduct(
-                "4",
-                "Smartwatch Serie 7",
-                349.99,
-                "https://img.pacifiko.com/PROD/resize/1/1000x1000/YWU1YzEzY2_4.jpg"
-            ),
-            FeaturedProduct(
-                "5",
-                "Tablet Air",
-                499.99,
-                "https://img.pacifiko.com/PROD/resize/1/1000x1000/YWU1YzEzY2_4.jpg"
-            )
-        )
-    }
-
-    private fun getMockFeaturedProductsForCountryB(): List<FeaturedProduct> {
-        return listOf(
-            FeaturedProduct(
-                "6",
-                "iPhone 13 Pro",
-                999.99,
-                "https://via.placeholder.com/150/FFC107/FFFFFF?text=iPhone+13"
-            ),
-            FeaturedProduct(
-                "7",
-                "AirPods Pro",
-                249.99,
-                "https://via.placeholder.com/150/FF9800/FFFFFF?text=AirPods"
-            ),
-            FeaturedProduct(
-                "8",
-                "MacBook Air",
-                999.99,
-                "https://via.placeholder.com/150/FFC107/FFFFFF?text=MacBook"
-            ),
-            FeaturedProduct(
-                "9",
-                "Apple Watch",
-                399.99,
-                "https://via.placeholder.com/150/FF9800/FFFFFF?text=Watch"
-            ),
-            FeaturedProduct(
-                "10",
-                "iPad Pro",
-                799.99,
-                "https://via.placeholder.com/150/FFC107/FFFFFF?text=iPad"
-            )
-        )
     }
 }
 
