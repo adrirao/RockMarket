@@ -1,6 +1,5 @@
 package dev.rao.rockmarket.detail_product.presentation
 
-import android.R
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -11,11 +10,11 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
-import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.bumptech.glide.Glide
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
+import dev.rao.rockmarket.R
 import dev.rao.rockmarket.databinding.FragmentDetailProductBinding
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -43,18 +42,11 @@ class DetailProductFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        setupToolbar()
         setupFavoriteButton()
         observeViewModel()
 
         // Cargar el detalle del producto
         viewModel.loadProductDetail(args.productId)
-    }
-
-    private fun setupToolbar() {
-        binding.toolbar.setNavigationOnClickListener {
-            findNavController().navigateUp()
-        }
     }
 
     private fun setupFavoriteButton() {
@@ -67,9 +59,9 @@ class DetailProductFragment : Fragment() {
 
     private fun updateFavoriteIcon() {
         val iconResource = if (isFavorite) {
-            R.drawable.btn_star_big_on
+            R.drawable.ic_credit
         } else {
-            R.drawable.btn_star_big_off
+            R.drawable.ic_credit
         }
         binding.fabFavorite.setImageResource(iconResource)
     }
