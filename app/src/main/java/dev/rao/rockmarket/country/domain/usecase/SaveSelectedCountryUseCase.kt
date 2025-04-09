@@ -7,6 +7,6 @@ import javax.inject.Inject
 class SaveSelectedCountryUseCase @Inject constructor(
     private val countryRepository: CountryRepository
 ) {
-    suspend operator fun invoke(country: Country): Result<Unit> =
+    suspend operator fun invoke(country: Country?): Result<Unit> =
         countryRepository.saveSelectedCountry(country)
 } 
