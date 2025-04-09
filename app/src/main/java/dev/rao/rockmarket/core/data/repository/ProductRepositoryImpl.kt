@@ -16,4 +16,15 @@ class ProductRepositoryImpl(
             Result.failure(e)
         }
     }
+
+    override suspend fun getProductById(countryCode: String, productId: String): Result<Product> {
+        return try {
+            val service = productServiceFactory.createService(countryCode)
+            val product = service.getProductById(productId)
+                ?: throw NoSuchElementException("No se encontró el producto con ID: $productId")
+            Result.success(product)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
 }

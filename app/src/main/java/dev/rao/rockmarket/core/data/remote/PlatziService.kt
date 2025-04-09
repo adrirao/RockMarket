@@ -13,4 +13,12 @@ class PlatziService @Inject constructor(
             dto.toProduct()
         }
     }
-} 
+
+    override suspend fun getProductById(id: String): Product? {
+        return try {
+            api.getProductById(id).toProduct()
+        } catch (e: Exception) {
+            null
+        }
+    }
+}
