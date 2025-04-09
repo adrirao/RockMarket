@@ -51,8 +51,11 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.ComposeView
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -132,18 +135,31 @@ class HomeFragment : Fragment() {
     ) {
         var showMenu by remember { mutableStateOf(false) }
 
-        /*NeumorphicSurface(
-            modifier = Modifier.fillMaxSize(),
-        ) {*/
         Scaffold(
             containerColor = Color.Transparent,
             topBar = {
                 TopAppBar(
                     title = {
                         Text(
-                            "MarketRock",
+                            buildAnnotatedString {
+                                withStyle(
+                                    style = SpanStyle(
+                                        fontSize = MaterialTheme.typography.headlineLarge.fontSize,
+                                        fontWeight = FontWeight.ExtraBold
+                                    )
+                                ) {
+                                    append("ROCK!")
+                                }
+                                withStyle(
+                                    style = SpanStyle(
+                                        fontSize = MaterialTheme.typography.headlineSmall.fontSize,
+                                        fontWeight = FontWeight.Thin
+                                    )
+                                ) {
+                                    append("Market")
+                                }
+                            },
                             color = NeuColors.text,
-                            style = MaterialTheme.typography.headlineMedium
                         )
                     },
                     colors = TopAppBarDefaults.topAppBarColors(
@@ -210,7 +226,6 @@ class HomeFragment : Fragment() {
                 )
             }
         )
-        /*}*/
     }
 
     @Composable
@@ -247,12 +262,25 @@ class HomeFragment : Fragment() {
                                 fontWeight = FontWeight.Bold,
                                 color = NeuColors.text,
                             )
-                            Text(
-                                text = country.id,
-                                style = MaterialTheme.typography.titleSmall,
-                                fontWeight = FontWeight.Bold,
-                                color = NeuColors.text,
-                            )
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.spacedBy(5.dp)
+                            ) {
+                                Text(
+                                    text = country.id,
+                                    style = MaterialTheme.typography.titleSmall,
+                                    fontWeight = FontWeight.Bold,
+                                    color = NeuColors.text,
+                                )
+                                Image(
+                                    painter = rememberAsyncImagePainter(country.flagUrl),
+                                    contentScale = ContentScale.Crop,
+                                    contentDescription = "Bandera del país",
+                                    modifier = Modifier
+                                        .size(24.dp)
+                                        .clip(RoundedCornerShape(50))
+                                )
+                            }
                         }
 
                         Spacer(modifier = Modifier.height(8.dp))
@@ -321,7 +349,7 @@ class HomeFragment : Fragment() {
         NeumorphicCard(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(height = 300.dp)
+                .height(height = 320.dp)
                 .clickable(onClick = onClick)
         ) {
             Column(
@@ -374,12 +402,14 @@ class HomeFragment : Fragment() {
                 }
 
                 Column(
-                    modifier = Modifier.fillMaxSize(),
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(8.dp),
                     verticalArrangement = Arrangement.spacedBy(4.dp)
                 ) {
                     Text(
                         text = product.title.truncateWithEllipsis(),
-                        style = MaterialTheme.typography.bodyMedium,
+                        style = MaterialTheme.typography.bodyLarge,
                         fontWeight = FontWeight.Bold,
                         maxLines = 2,
                         overflow = TextOverflow.Ellipsis,
