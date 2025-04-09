@@ -1,13 +1,17 @@
 package dev.rao.rockmarket.country.presentation
 
+import android.animation.AnimatorSet
+import android.animation.ObjectAnimator
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
+import android.view.animation.OvershootInterpolator
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
-import dev.rao.rockmarket.country.domain.model.Country
+import dev.rao.rockmarket.core.domain.model.Country
 import dev.rao.rockmarket.databinding.ItemCountryBinding
 
 class CountryAdapter(
@@ -29,8 +33,34 @@ class CountryAdapter(
         val country = getItem(position)
         holder.bind(country, country == selectedCountry)
         holder.itemView.setOnClickListener {
+            animateItemSelection(it)
             onCountrySelected(country)
         }
+    }
+
+    private fun animateItemSelection(view: View) {
+        val scaleDownX = ObjectAnimator.ofFloat(view, "scaleX", 0.95f)
+        val scaleDownY = ObjectAnimator.ofFloat(view, "scaleY", 0.95f)
+        val scaleUpX = ObjectAnimator.ofFloat(view, "scaleX", 1.0f)
+        val scaleUpY = ObjectAnimator.ofFloat(view, "scaleY", 1.0f)
+
+        scaleDownX.duration = 100
+        scaleDownY.duration = 100
+        scaleUpX.duration = 200
+        scaleUpY.duration = 200
+
+        scaleUpX.interpolator = OvershootInterpolator(1.5f)
+        scaleUpY.interpolator = OvershootInterpolator(1.5f)
+
+        val scaleDown = AnimatorSet()
+        scaleDown.play(scaleDownX).with(scaleDownY)
+
+        val scaleUp = AnimatorSet()
+        scaleUp.play(scaleUpX).with(scaleUpY)
+
+        val animatorSet = AnimatorSet()
+        animatorSet.play(scaleDown).before(scaleUp)
+        animatorSet.start()
     }
 
     fun setSelectedCountry(country: Country) {
@@ -51,11 +81,18 @@ class CountryAdapter(
             binding.countryNameTextView.text = country.name
             binding.selectedImageView.isVisible = isSelected
 
-            country.flag.let { url ->
+            country.flagUrl.let { url ->
                 Glide.with(binding.root)
                     .load(url)
                     .circleCrop()
                     .into(binding.flagImageView)
+            }
+
+            // Cambiar estilo si está seleccionado
+            if (isSelected) {
+                binding.root.elevation = 8f
+            } else {
+                binding.root.elevation = 4f
             }
         }
     }

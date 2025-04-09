@@ -2,8 +2,8 @@ package dev.rao.rockmarket.country.data.repository
 
 import android.content.SharedPreferences
 import com.google.gson.Gson
+import dev.rao.rockmarket.core.domain.model.Country
 import dev.rao.rockmarket.country.data.repository.CountryProvider.KEY_SELECTED_COUNTRY
-import dev.rao.rockmarket.country.domain.model.Country
 import dev.rao.rockmarket.country.domain.repository.CountryRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow

@@ -1,6 +1,6 @@
 package dev.rao.rockmarket.country.presentation
 
-import dev.rao.rockmarket.country.domain.model.Country
+import dev.rao.rockmarket.core.domain.model.Country
 
 sealed class CountrySelectionState {
     object Initial : CountrySelectionState()

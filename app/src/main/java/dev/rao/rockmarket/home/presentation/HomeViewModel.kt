@@ -4,8 +4,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dev.rao.rockmarket.auth.login.domain.usecase.SignOutUseCase
+import dev.rao.rockmarket.core.domain.model.Country
 import dev.rao.rockmarket.core.domain.model.Product
-import dev.rao.rockmarket.country.domain.model.Country
 import dev.rao.rockmarket.country.domain.usecase.GetSelectedCountryUseCase
 import dev.rao.rockmarket.country.domain.usecase.SaveSelectedCountryUseCase
 import dev.rao.rockmarket.home.domain.usecase.GetProductsUseCase

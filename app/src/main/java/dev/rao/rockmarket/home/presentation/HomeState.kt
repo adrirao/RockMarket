@@ -1,6 +1,6 @@
 package dev.rao.rockmarket.home.presentation
 
-import dev.rao.rockmarket.country.domain.model.Country
+import dev.rao.rockmarket.core.domain.model.Country
 
 sealed class HomeState {
     object Initial : HomeState()

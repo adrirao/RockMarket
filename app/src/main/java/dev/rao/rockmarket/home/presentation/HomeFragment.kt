@@ -61,6 +61,7 @@ import androidx.navigation.fragment.findNavController
 import coil.compose.rememberAsyncImagePainter
 import dagger.hilt.android.AndroidEntryPoint
 import dev.rao.rockmarket.R
+import dev.rao.rockmarket.core.domain.model.Country
 import dev.rao.rockmarket.core.domain.model.Product
 import dev.rao.rockmarket.home.presentation.components.NeumorphicButton
 import dev.rao.rockmarket.home.presentation.components.NeumorphicCard
@@ -255,7 +256,7 @@ class HomeFragment : Fragment() {
                         }
 
                         Spacer(modifier = Modifier.height(8.dp))
-                        ProductsBanner(products)
+                        ProductsBanner(products, country = country)
                     } else {
                         Text(
                             text = "No se ha seleccionado ningún país",
@@ -277,7 +278,7 @@ class HomeFragment : Fragment() {
     }
 
     @Composable
-    fun ProductsBanner(products: List<Product>) {
+    fun ProductsBanner(products: List<Product>, country: Country) {
         if (products.isEmpty()) {
             Box(
                 modifier = Modifier.fillMaxSize(),
@@ -304,7 +305,7 @@ class HomeFragment : Fragment() {
                 contentPadding = PaddingValues(8.dp),
             ) {
                 items(products) { product ->
-                    FeaturedProductItem(product) {
+                    FeaturedProductItem(product, country = country) {
                         navigateToProductDetail(product.id)
                     }
                 }
@@ -313,7 +314,7 @@ class HomeFragment : Fragment() {
     }
 
     @Composable
-    fun FeaturedProductItem(product: Product, onClick: () -> Unit) {
+    fun FeaturedProductItem(product: Product, country: Country, onClick: () -> Unit) {
         var isFavorite by rememberSaveable { mutableStateOf(false) }
         val interactionSource = remember { MutableInteractionSource() }
 
@@ -391,7 +392,7 @@ class HomeFragment : Fragment() {
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Text(
-                            text = "$${product.price}",
+                            text = "${country.currencySymbol}${product.price}",
                             style = MaterialTheme.typography.bodyLarge,
                             color = NeuColors.accent,
                             fontWeight = FontWeight.ExtraBold

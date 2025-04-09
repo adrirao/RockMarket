@@ -1,6 +1,6 @@
 package dev.rao.rockmarket.country.domain.usecase
 
-import dev.rao.rockmarket.country.domain.model.Country
+import dev.rao.rockmarket.core.domain.model.Country
 import dev.rao.rockmarket.country.domain.repository.CountryRepository
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
