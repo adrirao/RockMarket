@@ -63,8 +63,3 @@ class HomeViewModel @Inject constructor(
     }
 }
 
-sealed class HomeState {
-    object Initial : HomeState()
-    data class Success(val country: Country?) : HomeState()
-    data class Error(val message: String) : HomeState()
-}
