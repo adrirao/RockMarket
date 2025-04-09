@@ -19,6 +19,22 @@
         android:id="@+id/countrySelectionFragment"
         android:name="dev.rao.rockmarket.country.presentation.CountrySelectionFragment"
         android:label="CountrySelectionFragment"
-        tools:layout="@layout/fragment_country_selection" />
+        tools:layout="@layout/fragment_country_selection">
+        <action
+            android:id="@+id/action_country_selection_to_home"
+            app:destination="@id/homeFragment"
+            app:popUpTo="@id/loginFragment"
+            app:popUpToInclusive="true" />
+    </fragment>
+    <fragment
+        android:id="@+id/homeFragment"
+        android:name="dev.rao.rockmarket.home.presentation.HomeFragment"
+        android:label="Home">
+        <action
+            android:id="@+id/action_homeFragment_to_loginFragment"
+            app:destination="@id/loginFragment"
+            app:popUpTo="@id/nav_graph"
+            app:popUpToInclusive="true" />
+    </fragment>
 
 </navigation>
