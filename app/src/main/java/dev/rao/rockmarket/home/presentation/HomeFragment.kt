@@ -305,7 +305,7 @@ class HomeFragment : Fragment() {
             ) {
                 items(products) { product ->
                     FeaturedProductItem(product) {
-                        // TODO: Implementar navegación al detalle del producto
+                        navigateToProductDetail(product.id)
                     }
                 }
             }
@@ -406,5 +406,10 @@ class HomeFragment : Fragment() {
                 }
             }
         }
+    }
+
+    private fun navigateToProductDetail(productId: String) {
+        val action = HomeFragmentDirections.actionHomeFragmentToProductDetailFragment(productId)
+        findNavController().navigate(action)
     }
 }

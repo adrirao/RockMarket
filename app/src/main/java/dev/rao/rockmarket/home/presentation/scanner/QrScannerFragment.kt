@@ -114,7 +114,7 @@ class QrScannerFragment : Fragment() {
                         }
 
                         is QrScannerState.Success -> {
-                            showSuccessAndNavigateBack(state.code)
+                            navigateToProductDetail(state.code)
                         }
 
                         is QrScannerState.Error -> {
@@ -128,13 +128,10 @@ class QrScannerFragment : Fragment() {
         }
     }
 
-    private fun showSuccessAndNavigateBack(code: String) {
-        Snackbar.make(
-            binding.root,
-            "Código QR válido: $code",
-            Snackbar.LENGTH_LONG
-        ).show()
-        findNavController().navigateUp()
+    private fun navigateToProductDetail(productId: String) {
+        val action =
+            QrScannerFragmentDirections.actionQrScannerFragmentToProductDetailFragment(productId)
+        findNavController().navigate(action)
     }
 
     private fun showError(message: String) {
