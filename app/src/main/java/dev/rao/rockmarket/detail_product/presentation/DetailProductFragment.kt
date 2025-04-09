@@ -10,11 +10,13 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.bumptech.glide.Glide
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import dev.rao.rockmarket.R
+import dev.rao.rockmarket.core.domain.model.Product
 import dev.rao.rockmarket.databinding.FragmentDetailProductBinding
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -29,6 +31,7 @@ class DetailProductFragment : Fragment() {
     private val args: DetailProductFragmentArgs by navArgs()
 
     private var isFavorite = false
+    private var currentProduct: Product? = null
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -51,18 +54,27 @@ class DetailProductFragment : Fragment() {
 
     private fun setupFavoriteButton() {
         binding.fabFavorite.setOnClickListener {
-            isFavorite = !isFavorite
-            updateFavoriteIcon()
+            currentProduct?.let { product ->
+                // Navegar a la pantalla de pagos
+                val action =
+                    DetailProductFragmentDirections.actionDetailProductFragmentToPaymentFragment(
+                        productTitle = product.title,
+                        productPrice = product.price.toFloat()
+                    )
+                findNavController().navigate(action)
+            } ?: run {
+                Snackbar.make(
+                    binding.root,
+                    "Producto no disponible para pago",
+                    Snackbar.LENGTH_SHORT
+                ).show()
+            }
         }
         updateFavoriteIcon()
     }
 
     private fun updateFavoriteIcon() {
-        val iconResource = if (isFavorite) {
-            R.drawable.ic_credit
-        } else {
-            R.drawable.ic_credit
-        }
+        val iconResource = R.drawable.ic_credit
         binding.fabFavorite.setImageResource(iconResource)
     }
 
@@ -72,7 +84,10 @@ class DetailProductFragment : Fragment() {
                 viewModel.state.collectLatest { state ->
                     when (state) {
                         is ProductDetailState.Loading -> showLoading()
-                        is ProductDetailState.Success -> showProductDetail(state)
+                        is ProductDetailState.Success -> {
+                            currentProduct = state.product
+                            showProductDetail(state)
+                        }
                         is ProductDetailState.Error -> showError(state.message)
                     }
                 }

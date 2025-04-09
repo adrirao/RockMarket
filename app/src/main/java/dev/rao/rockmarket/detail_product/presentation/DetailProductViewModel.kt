@@ -21,9 +21,6 @@ class DetailProductViewModel @Inject constructor(
     private val _state = MutableStateFlow<ProductDetailState>(ProductDetailState.Loading)
     val state: StateFlow<ProductDetailState> = _state.asStateFlow()
 
-    /**
-     * Carga el detalle de un producto por su ID
-     */
     fun loadProductDetail(productId: String) {
         viewModelScope.launch {
             _state.value = ProductDetailState.Loading
