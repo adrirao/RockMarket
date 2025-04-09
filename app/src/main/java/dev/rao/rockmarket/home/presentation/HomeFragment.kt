@@ -4,7 +4,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -89,12 +88,7 @@ class HomeFragment : Fragment() {
                             navigateToLogin()
                         },
                         onScanQr = {
-                            // TODO: Implementar navegación al escáner QR
-                            Toast.makeText(
-                                requireContext(),
-                                "Funcionalidad de escáner QR en desarrollo",
-                                Toast.LENGTH_SHORT
-                            ).show()
+                            navigateToQrScanner()
                         }
                     )
                 }
@@ -104,6 +98,10 @@ class HomeFragment : Fragment() {
 
     private fun navigateToLogin() {
         findNavController().navigate(R.id.action_homeFragment_to_loginFragment)
+    }
+
+    private fun navigateToQrScanner() {
+        findNavController().navigate(R.id.action_homeFragment_to_qrScannerFragment)
     }
 
     @OptIn(ExperimentalMaterial3Api::class)
