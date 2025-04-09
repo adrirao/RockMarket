@@ -101,6 +101,8 @@ class LoginFragment : Fragment() {
 
                     is LoginState.Loading -> {
                         binding.progressBar.isVisible = true
+                        binding.loginButton.isEnabled = false
+                        binding.googleSignInButton.isEnabled = false
                     }
 
                     is LoginState.Success -> {
@@ -110,6 +112,8 @@ class LoginFragment : Fragment() {
 
                     is LoginState.Error -> {
                         binding.progressBar.isVisible = false
+                        binding.loginButton.isEnabled = true
+                        binding.googleSignInButton.isEnabled = true
                         Toast.makeText(requireContext(), state.message, Toast.LENGTH_SHORT).show()
                     }
                 }
