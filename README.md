@@ -25,6 +25,7 @@ desarrollo Android.
     - **ViewModel**: Para la gestión del estado y la lógica de presentación
     - **LiveData/Flow**: Para la gestión de datos reactivos
     - **Jetpack Compose**: Para la interfaz de usuario moderna y declarativa (en algunas pantallas)
+  - **Room**: Para persistencia de datos locales y almacenamiento de favoritos
 - **Coroutines**: Para manejar operaciones asíncronas
 - **Firebase**:
     - **Firebase Auth**: Para autenticación de usuarios
@@ -64,8 +65,22 @@ desarrollo Android.
   API.
 - **Componentes UI**: Implementa efectos de Neumorfismo para un diseño moderno.
 - **Navegación**: Permite navegar al escáner QR o a los detalles de un producto.
+- **Favoritos**: Permite marcar productos como favoritos y verlos en una sección dedicada.
 
-### 4. Escáner QR
+### 4. Favoritos
+
+- **Ruta**: Integrado en la pantalla Home (`app/src/main/java/dev/rao/rockmarket/home/`)
+- **Funcionalidad**: Permite guardar y gestionar productos favoritos del usuario.
+- **Tecnologías específicas**: Room Database para persistencia local, Flow para observar cambios.
+- **Componentes UI**: Sección accesible desde el menú desplegable, con indicadores visuales de
+  estado favorito.
+- **Características**:
+  - Almacenamiento persistente entre sesiones
+  - Filtrado de favoritos por país seleccionado
+  - Actualización en tiempo real del estado de favoritos
+  - Interfaz intuitiva con iconos de corazón para marcar/desmarcar
+
+### 5. Escáner QR
 
 - **Ruta**: `app/src/main/java/dev/rao/rockmarket/home/presentation/scanner/`
 - **Funcionalidad**: Permite escanear códigos QR para ver directamente los detalles de un producto.
@@ -73,7 +88,7 @@ desarrollo Android.
 - **Navegación**: Al escanear un QR válido, navegación directa a la pantalla de detalle del
   producto.
 
-### 5. Detalle de Producto
+### 6. Detalle de Producto
 
 - **Ruta**: `app/src/main/java/dev/rao/rockmarket/detail_product/`
 - **Funcionalidad**: Muestra información detallada del producto seleccionado.
@@ -81,7 +96,7 @@ desarrollo Android.
 - **Navegación**: Implementa navegación personalizada para siempre volver al listado de productos al
   presionar el botón de retroceso.
 
-### 6. Pantalla de Pago
+### 7. Pantalla de Pago
 
 - **Ruta**: `app/src/main/java/dev/rao/rockmarket/payment/`
 - **Funcionalidad**: Formulario de pago para procesar la compra de un producto.
@@ -93,13 +108,21 @@ desarrollo Android.
 ### Capa de Datos
 
 - **Repositorios**: Implementan interfaces definidas en la capa de dominio.
-- **Fuentes de Datos**: API remotas (Fake Store API, Platzi API) y preferencias locales.
-- **Mappers**: Conversión entre DTOs y modelos de dominio.
+- **Fuentes de Datos**:
+  - API remotas (Fake Store API, Platzi API)
+  - Room Database para almacenamiento local de favoritos
+  - Preferencias locales para configuración
+- **Mappers**: Conversión entre DTOs, entidades de Room y modelos de dominio.
 
 ### Capa de Dominio
 
 - **Modelos**: Entidades de negocio como `Product`, `User`, `Country`.
-- **Use Cases**: Lógica de negocio específica como `GetProductsUseCase`, `ValidateQrCodeUseCase`.
+- **Use Cases**: Lógica de negocio específica como:
+  - `GetProductsUseCase`
+  - `ValidateQrCodeUseCase`
+  - `ToggleFavoriteProductUseCase`
+  - `GetFavoriteProductsUseCase`
+  - `CheckFavoriteStatusUseCase`
 - **Repositorios (Interfaces)**: Definen contratos para la capa de datos.
 
 ### Capa de Presentación
@@ -115,14 +138,33 @@ desarrollo Android.
 3. **Neumorfismo**: Diseño visual moderno para la interfaz de usuario.
 4. **Escaneo QR**: Funcionalidad avanzada de escaneo de códigos QR para acceder a productos.
 5. **Navegación personalizada**: Control del flujo de navegación entre pantallas.
+6. **Pull-to-Refresh**: Implementación de gestos para actualizar contenido.
+7. **Favoritos persistentes**: Sistema de favoritos con Room Database para guardar preferencias
+   entre sesiones.
 
 ## Flujo de Navegación
 
 1. Login → Selección de País → Home
 2. Home → Detalle de Producto → Pago → Home
 3. Home → Escáner QR → Detalle de Producto → Home
+4. Home → Favoritos (mediante menú desplegable) → Detalle de Producto
 
 ## Estructura del Proyecto
 
 La estructura del proyecto sigue principios de modularización por características, donde cada
 funcionalidad principal tiene su propio paquete con subpaquetes para datos, dominio y presentación. 
+
+### Estructura de la funcionalidad de Favoritos
+
+- **Entidades**:
+  `app/src/main/java/dev/rao/rockmarket/core/data/local/entity/FavoriteProductEntity.kt`
+- **DAO**: `app/src/main/java/dev/rao/rockmarket/core/data/local/dao/FavoriteProductDao.kt`
+- **Base de Datos**: `app/src/main/java/dev/rao/rockmarket/core/data/local/RockMarketDatabase.kt`
+- **Repositorio (Interfaz)**:
+  `app/src/main/java/dev/rao/rockmarket/core/domain/repository/FavoriteRepository.kt`
+- **Repositorio (Implementación)**:
+  `app/src/main/java/dev/rao/rockmarket/core/data/repository/FavoriteRepositoryImpl.kt`
+- **Use Cases**:
+  - `app/src/main/java/dev/rao/rockmarket/home/domain/usecase/ToggleFavoriteProductUseCase.kt`
+  - `app/src/main/java/dev/rao/rockmarket/home/domain/usecase/GetFavoriteProductsUseCase.kt`
+  - `app/src/main/java/dev/rao/rockmarket/home/domain/usecase/CheckFavoriteStatusUseCase.kt` 
