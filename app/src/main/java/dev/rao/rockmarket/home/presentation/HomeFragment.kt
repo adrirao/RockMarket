@@ -236,7 +236,8 @@ class HomeFragment : Fragment() {
     ) {
         Column(
             modifier = modifier,
-            horizontalAlignment = Alignment.CenterHorizontally
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
         ) {
             when (state) {
                 is HomeState.Initial -> {

@@ -170,7 +170,15 @@ class DetailProductFragment : Fragment() {
             binding.root,
             "Error: $message",
             Snackbar.LENGTH_LONG
-        ).show()
+        ).addCallback(object : Snackbar.Callback() {
+            override fun onDismissed(
+                transientBottomBar: Snackbar?,
+                event: Int
+            ) {
+                navigateToHome()
+            }
+        }).show()
+
     }
 
     override fun onDestroyView() {
