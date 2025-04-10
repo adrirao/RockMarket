@@ -7,6 +7,15 @@ explorar productos, escanear códigos QR para ver detalles de productos y realiz
 aplicación implementa una arquitectura moderna y utiliza diversas tecnologías contemporáneas de
 desarrollo Android.
 
+## Demo
+### 📷 Capturas
+![DarkMode](https://github.com/user-attachments/assets/8f28dc6d-da5e-4687-88ce-240eac7ec893)
+![LightMode](https://github.com/user-attachments/assets/c181b611-0a00-4f5b-8261-f3a207762833)
+
+
+### 📽️ Video
+https://github.com/user-attachments/assets/85d9ee3b-8cf2-4677-9e2d-5d1cdc835065
+
 ## Tecnologías Utilizadas
 
 ### Arquitectura y Patrones
