@@ -47,7 +47,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -120,13 +119,21 @@ class HomeFragment : Fragment() {
     ) {
         val state by viewModel.state.collectAsStateWithLifecycle(initialValue = HomeState.Initial)
         val products by viewModel.products.collectAsStateWithLifecycle(initialValue = emptyList())
+        val favoriteProducts by viewModel.favoriteProducts.collectAsStateWithLifecycle(initialValue = emptyList())
         val isRefreshing by viewModel.isRefreshing.collectAsStateWithLifecycle()
+        val isShowingFavorites by viewModel.isShowingFavorites.collectAsStateWithLifecycle()
+        val favoriteStatus by viewModel.productFavoriteStatus.collectAsStateWithLifecycle()
 
         HomeScreenContent(
             state = state,
             products = products,
+            favoriteProducts = favoriteProducts,
+            favoriteStatus = favoriteStatus,
             isRefreshing = isRefreshing,
+            isShowingFavorites = isShowingFavorites,
             onRefresh = { viewModel.refreshProducts() },
+            onToggleShowFavorites = { viewModel.toggleShowFavorites() },
+            onToggleFavorite = { viewModel.toggleFavorite(it) },
             onLogout = onLogout,
             onScanQr = onScanQr
         )
@@ -137,8 +144,13 @@ class HomeFragment : Fragment() {
     fun HomeScreenContent(
         state: HomeState,
         products: List<Product>,
+        favoriteProducts: List<Product>,
+        favoriteStatus: Map<String, Boolean>,
         isRefreshing: Boolean,
+        isShowingFavorites: Boolean,
         onRefresh: () -> Unit,
+        onToggleShowFavorites: () -> Unit,
+        onToggleFavorite: (Product) -> Unit,
         onLogout: () -> Unit,
         onScanQr: () -> Unit
     ) {
@@ -167,6 +179,17 @@ class HomeFragment : Fragment() {
                                 ) {
                                     append("Market")
                                 }
+                                if (isShowingFavorites) {
+                                    withStyle(
+                                        style = SpanStyle(
+                                            fontSize = MaterialTheme.typography.bodyMedium.fontSize,
+                                            fontWeight = FontWeight.Normal,
+                                            color = NeuColors.accent
+                                        )
+                                    ) {
+                                        append(" - Favoritos")
+                                    }
+                                }
                             },
                             color = NeuColors.text,
                         )
@@ -186,6 +209,18 @@ class HomeFragment : Fragment() {
                             expanded = showMenu,
                             onDismissRequest = { showMenu = false }
                         ) {
+                            DropdownMenuItem(
+                                text = {
+                                    Text(
+                                        if (isShowingFavorites) "Ver todos los productos" else "Ver favoritos",
+                                        color = NeuColors.text
+                                    )
+                                },
+                                onClick = {
+                                    showMenu = false
+                                    onToggleShowFavorites()
+                                }
+                            )
                             DropdownMenuItem(
                                 text = {
                                     Text(
@@ -229,8 +264,12 @@ class HomeFragment : Fragment() {
                 HomeContent(
                     state = state,
                     products = products,
+                    favoriteProducts = favoriteProducts,
+                    favoriteStatus = favoriteStatus,
                     isRefreshing = isRefreshing,
+                    isShowingFavorites = isShowingFavorites,
                     onRefresh = onRefresh,
+                    onToggleFavorite = onToggleFavorite,
                     modifier = Modifier
                         .fillMaxSize()
                         .padding(top = paddingValues.calculateTopPadding())
@@ -243,8 +282,12 @@ class HomeFragment : Fragment() {
     fun HomeContent(
         state: HomeState,
         products: List<Product>,
+        favoriteProducts: List<Product>,
+        favoriteStatus: Map<String, Boolean>,
         isRefreshing: Boolean,
+        isShowingFavorites: Boolean,
         onRefresh: () -> Unit,
+        onToggleFavorite: (Product) -> Unit,
         modifier: Modifier = Modifier
     ) {
         when (state) {
@@ -276,7 +319,7 @@ class HomeFragment : Fragment() {
                             horizontalArrangement = Arrangement.SpaceBetween
                         ) {
                             Text(
-                                text = "Productos Destacados",
+                                text = if (isShowingFavorites) "Productos Favoritos" else "Productos Destacados",
                                 style = MaterialTheme.typography.titleSmall,
                                 fontWeight = FontWeight.Bold,
                                 color = NeuColors.text,
@@ -303,12 +346,27 @@ class HomeFragment : Fragment() {
                         }
 
                         Spacer(modifier = Modifier.height(8.dp))
-                        ProductsBanner(
-                            products = products,
-                            country = country,
-                            isRefreshing = isRefreshing,
-                            onRefresh = onRefresh
-                        )
+                        if (isShowingFavorites) {
+                            ProductsBanner(
+                                products = favoriteProducts,
+                                country = country,
+                                favoriteStatus = favoriteStatus,
+                                isRefreshing = isRefreshing,
+                                onRefresh = onRefresh,
+                                onToggleFavorite = onToggleFavorite,
+                                emptyMessage = "No tienes productos favoritos. Marca alguno como favorito para verlo aquí."
+                            )
+                        } else {
+                            ProductsBanner(
+                                products = products,
+                                country = country,
+                                favoriteStatus = favoriteStatus,
+                                isRefreshing = isRefreshing,
+                                onRefresh = onRefresh,
+                                onToggleFavorite = onToggleFavorite,
+                                emptyMessage = "Cargando productos..."
+                            )
+                        }
                     }
                 } else {
                     Column(
@@ -404,8 +462,11 @@ class HomeFragment : Fragment() {
     fun ProductsBanner(
         products: List<Product>,
         country: Country,
+        favoriteStatus: Map<String, Boolean>,
         isRefreshing: Boolean,
-        onRefresh: () -> Unit
+        onRefresh: () -> Unit,
+        onToggleFavorite: (Product) -> Unit,
+        emptyMessage: String
     ) {
         val pullRefreshState = rememberPullRefreshState(
             refreshing = isRefreshing,
@@ -424,13 +485,15 @@ class HomeFragment : Fragment() {
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
                         Text(
-                            text = "Cargando productos...",
+                            text = emptyMessage,
                             style = MaterialTheme.typography.bodyLarge,
                             color = NeuColors.text
                         )
-                        CircularProgressIndicator(
-                            color = NeuColors.accent
-                        )
+                        if (emptyMessage == "Cargando productos...") {
+                            CircularProgressIndicator(
+                                color = NeuColors.accent
+                            )
+                        }
                     }
                 }
             } else {
@@ -443,9 +506,13 @@ class HomeFragment : Fragment() {
                         contentPadding = PaddingValues(8.dp),
                     ) {
                         items(products) { product ->
-                            FeaturedProductItem(product, country = country) {
-                                navigateToProductDetail(product.id)
-                            }
+                            FeaturedProductItem(
+                                product = product,
+                                country = country,
+                                isFavorite = favoriteStatus[product.id] ?: false,
+                                onToggleFavorite = { onToggleFavorite(product) },
+                                onClick = { navigateToProductDetail(product.id) }
+                            )
                         }
                     }
 
@@ -462,8 +529,13 @@ class HomeFragment : Fragment() {
     }
 
     @Composable
-    fun FeaturedProductItem(product: Product, country: Country, onClick: () -> Unit) {
-        var isFavorite by rememberSaveable { mutableStateOf(false) }
+    fun FeaturedProductItem(
+        product: Product,
+        country: Country,
+        isFavorite: Boolean,
+        onToggleFavorite: () -> Unit,
+        onClick: () -> Unit
+    ) {
         val interactionSource = remember { MutableInteractionSource() }
 
         NeumorphicCard(
@@ -500,8 +572,9 @@ class HomeFragment : Fragment() {
                             )
                             .clickable(
                                 interactionSource = interactionSource,
-                                indication = null
-                            ) { isFavorite = !isFavorite },
+                                indication = null,
+                                onClick = onToggleFavorite
+                            ),
                         contentAlignment = Alignment.Center
                     ) {
                         Icon(
