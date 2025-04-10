@@ -98,11 +98,18 @@ class DetailProductFragment : Fragment() {
     private fun showLoading() {
         binding.progressBar.isVisible = true
         binding.fabFavorite.isVisible = false
+        binding.cardProduct.isVisible = false
+        binding.cardDescription.isVisible = false
+        binding.cardRating.isVisible = false
     }
 
     private fun showProductDetail(state: ProductDetailState.Success) {
-        binding.progressBar.isVisible = false
         binding.fabFavorite.isVisible = true
+        binding.fabFavorite.isVisible = true
+        binding.cardProduct.isVisible = true
+        binding.cardDescription.isVisible = true
+        binding.cardRating.isVisible = true
+        binding.progressBar.isVisible = false
 
         val product = state.product
 
