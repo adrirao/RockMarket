@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.activity.OnBackPressedCallback
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -47,9 +48,27 @@ class DetailProductFragment : Fragment() {
 
         setupFavoriteButton()
         observeViewModel()
+        setupBackNavigation()
 
         // Cargar el detalle del producto
         viewModel.loadProductDetail(args.productId)
+    }
+
+    private fun setupBackNavigation() {
+        // Sobreescribir el comportamiento del botón de retroceso
+        requireActivity().onBackPressedDispatcher.addCallback(
+            owner = viewLifecycleOwner,
+            object : OnBackPressedCallback(true) {
+                override fun handleOnBackPressed() {
+                    navigateToHome()
+                }
+
+            })
+    }
+
+    private fun navigateToHome() {
+        val action = DetailProductFragmentDirections.actionDetailProductFragmentToHomeFragment()
+        findNavController().navigate(action)
     }
 
     private fun setupFavoriteButton() {
@@ -88,6 +107,7 @@ class DetailProductFragment : Fragment() {
                             currentProduct = state.product
                             showProductDetail(state)
                         }
+
                         is ProductDetailState.Error -> showError(state.message)
                     }
                 }
