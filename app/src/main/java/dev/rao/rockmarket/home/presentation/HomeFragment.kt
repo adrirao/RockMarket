@@ -23,11 +23,15 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.outlined.QrCodeScanner
+import androidx.compose.material.pullrefresh.PullRefreshIndicator
+import androidx.compose.material.pullrefresh.pullRefresh
+import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
@@ -116,10 +120,13 @@ class HomeFragment : Fragment() {
     ) {
         val state by viewModel.state.collectAsStateWithLifecycle(initialValue = HomeState.Initial)
         val products by viewModel.products.collectAsStateWithLifecycle(initialValue = emptyList())
+        val isRefreshing by viewModel.isRefreshing.collectAsStateWithLifecycle()
 
         HomeScreenContent(
             state = state,
             products = products,
+            isRefreshing = isRefreshing,
+            onRefresh = { viewModel.refreshProducts() },
             onLogout = onLogout,
             onScanQr = onScanQr
         )
@@ -130,6 +137,8 @@ class HomeFragment : Fragment() {
     fun HomeScreenContent(
         state: HomeState,
         products: List<Product>,
+        isRefreshing: Boolean,
+        onRefresh: () -> Unit,
         onLogout: () -> Unit,
         onScanQr: () -> Unit
     ) {
@@ -220,6 +229,8 @@ class HomeFragment : Fragment() {
                 HomeContent(
                     state = state,
                     products = products,
+                    isRefreshing = isRefreshing,
+                    onRefresh = onRefresh,
                     modifier = Modifier
                         .fillMaxSize()
                         .padding(top = paddingValues.calculateTopPadding())
@@ -232,25 +243,32 @@ class HomeFragment : Fragment() {
     fun HomeContent(
         state: HomeState,
         products: List<Product>,
+        isRefreshing: Boolean,
+        onRefresh: () -> Unit,
         modifier: Modifier = Modifier
     ) {
-        Column(
-            modifier = modifier,
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
-        ) {
-            when (state) {
-                is HomeState.Initial -> {
+        when (state) {
+            is HomeState.Initial -> {
+                Column(
+                    modifier = modifier,
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center
+                ) {
                     Text(
                         text = "Cargando información del país...",
                         style = MaterialTheme.typography.bodyLarge,
                         color = NeuColors.text
                     )
                 }
+            }
 
-                is HomeState.Success -> {
-                    val country = state.country
-                    if (country != null) {
+            is HomeState.Success -> {
+                val country = state.country
+                if (country != null) {
+                    Column(
+                        modifier = modifier,
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
                         Row(
                             modifier = Modifier
                                 .fillMaxWidth()
@@ -285,8 +303,19 @@ class HomeFragment : Fragment() {
                         }
 
                         Spacer(modifier = Modifier.height(8.dp))
-                        ProductsBanner(products, country = country)
-                    } else {
+                        ProductsBanner(
+                            products = products,
+                            country = country,
+                            isRefreshing = isRefreshing,
+                            onRefresh = onRefresh
+                        )
+                    }
+                } else {
+                    Column(
+                        modifier = modifier,
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.Center
+                    ) {
                         Text(
                             text = "No se ha seleccionado ningún país",
                             style = MaterialTheme.typography.bodyLarge,
@@ -294,49 +323,139 @@ class HomeFragment : Fragment() {
                         )
                     }
                 }
+            }
 
-                is HomeState.Error -> {
-                    Text(
-                        text = "Error: ${state.message}",
-                        style = MaterialTheme.typography.bodyLarge,
-                        color = MaterialTheme.colorScheme.error
-                    )
-                }
+            is HomeState.Error -> {
+                ErrorContent(
+                    errorMessage = state.message,
+                    isRefreshing = isRefreshing,
+                    onRefresh = onRefresh,
+                    modifier = modifier
+                )
             }
         }
     }
 
+    @OptIn(ExperimentalMaterialApi::class)
     @Composable
-    fun ProductsBanner(products: List<Product>, country: Country) {
-        if (products.isEmpty()) {
-            Box(
-                modifier = Modifier.fillMaxSize(),
-                contentAlignment = Alignment.Center
-            ) {
+    fun ErrorContent(
+        errorMessage: String,
+        isRefreshing: Boolean,
+        onRefresh: () -> Unit,
+        modifier: Modifier = Modifier
+    ) {
+        val pullRefreshState = rememberPullRefreshState(
+            refreshing = isRefreshing,
+            onRefresh = onRefresh
+        )
 
-                Column(
-                    modifier = Modifier.fillMaxWidth(),
-                    verticalArrangement = Arrangement.spacedBy(20.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally
+        Box(
+            modifier = modifier
+                .fillMaxSize()
+                .pullRefresh(pullRefreshState)
+        ) {
+            Column(
+                modifier = Modifier.fillMaxSize(),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center
+            ) {
+                Text(
+                    text = "Error: $errorMessage",
+                    style = MaterialTheme.typography.bodyLarge,
+                    color = MaterialTheme.colorScheme.error
+                )
+                Spacer(modifier = Modifier.height(16.dp))
+
+                NeumorphicButton(
+                    onClick = onRefresh,
+                    cornerRadius = 8.dp,
+                    elevation = 8.dp,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(50.dp),
+                    background = NeuColors.text
                 ) {
-                    Text(
-                        text = "Cargando productos...",
-                        style = MaterialTheme.typography.bodyLarge,
-                        color = NeuColors.text
-                    )
-                    CircularProgressIndicator(
-                        color = NeuColors.accent
-                    )
+                    Box(
+                        modifier = Modifier.fillMaxSize(),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(
+                            text = "Reintentar",
+                            color = NeuColors.background,
+                            style = MaterialTheme.typography.bodyLarge,
+                            fontWeight = FontWeight.Bold
+                        )
+                    }
                 }
             }
-        } else {
-            LazyColumn(
-                contentPadding = PaddingValues(8.dp),
-            ) {
-                items(products) { product ->
-                    FeaturedProductItem(product, country = country) {
-                        navigateToProductDetail(product.id)
+
+            PullRefreshIndicator(
+                refreshing = isRefreshing,
+                state = pullRefreshState,
+                modifier = Modifier.align(Alignment.TopCenter),
+                backgroundColor = NeuColors.background,
+                contentColor = NeuColors.accent
+            )
+        }
+    }
+
+    @OptIn(ExperimentalMaterialApi::class)
+    @Composable
+    fun ProductsBanner(
+        products: List<Product>,
+        country: Country,
+        isRefreshing: Boolean,
+        onRefresh: () -> Unit
+    ) {
+        val pullRefreshState = rememberPullRefreshState(
+            refreshing = isRefreshing,
+            onRefresh = onRefresh
+        )
+
+        Box(modifier = Modifier.fillMaxSize()) {
+            if (products.isEmpty() && !isRefreshing) {
+                Box(
+                    modifier = Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Column(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalArrangement = Arrangement.spacedBy(20.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Text(
+                            text = "Cargando productos...",
+                            style = MaterialTheme.typography.bodyLarge,
+                            color = NeuColors.text
+                        )
+                        CircularProgressIndicator(
+                            color = NeuColors.accent
+                        )
                     }
+                }
+            } else {
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .pullRefresh(pullRefreshState)
+                ) {
+                    LazyColumn(
+                        contentPadding = PaddingValues(8.dp),
+                    ) {
+                        items(products) { product ->
+                            FeaturedProductItem(product, country = country) {
+                                navigateToProductDetail(product.id)
+                            }
+                        }
+                    }
+
+                    PullRefreshIndicator(
+                        refreshing = isRefreshing,
+                        state = pullRefreshState,
+                        modifier = Modifier.align(Alignment.TopCenter),
+                        backgroundColor = NeuColors.background,
+                        contentColor = NeuColors.accent
+                    )
                 }
             }
         }

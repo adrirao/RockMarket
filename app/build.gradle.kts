@@ -89,6 +89,7 @@ dependencies {
     implementation("androidx.compose.runtime:runtime-livedata:1.6.3")
     implementation("androidx.navigation:navigation-compose:2.7.7")
     implementation("androidx.hilt:hilt-navigation-compose:1.1.0")
+    implementation("androidx.compose.material:material")
     implementation("io.coil-kt:coil-compose:2.4.0")
 
     // Material icons extended

@@ -34,6 +34,9 @@ class HomeViewModel @Inject constructor(
     private val _products = MutableStateFlow<List<Product>>(emptyList())
     val products: StateFlow<List<Product>> = _products.asStateFlow()
 
+    private val _isRefreshing = MutableStateFlow(false)
+    val isRefreshing: StateFlow<Boolean> = _isRefreshing.asStateFlow()
+
     init {
         loadSelectedCountry()
     }
@@ -69,6 +72,38 @@ class HomeViewModel @Inject constructor(
                     "No hay conexión a internet"
                 }
                 _state.value = HomeState.Error(message)
+            }
+        }
+    }
+
+    fun refreshProducts() {
+        val currentState = _state.value
+        _isRefreshing.value = true
+
+        viewModelScope.launch {
+            // Obtener el país seleccionado sin importar el estado actual
+            getSelectedCountryUseCase().collect { country ->
+                if (country != null) {
+                    getProductsUseCase(country.id)
+                        .onSuccess {
+                            _products.value = it
+                            _state.value = HomeState.Success(country)
+                        }
+                        .onFailure { exception ->
+                            Log.e("HomeViewModel", "Error al recargar los productos", exception)
+                            val message = if (NetworkUtils.isNetworkConnected(context)) {
+                                "Error al recargar los productos. Por favor, inténtalo más tarde."
+                            } else {
+                                "No hay conexión a internet"
+                            }
+                            _state.value = HomeState.Error(message)
+                        }
+                    _isRefreshing.value = false
+                    return@collect // Terminar la recolección después de procesar el país
+                } else {
+                    _state.value = HomeState.Error("No se ha seleccionado ningún país")
+                    _isRefreshing.value = false
+                }
             }
         }
     }
