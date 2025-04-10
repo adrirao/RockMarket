@@ -91,6 +91,11 @@ https://github.com/user-attachments/assets/85d9ee3b-8cf2-4677-9e2d-5d1cdc835065
 
 ### 5. Escáner QR
 
+#### QR VALIDO
+![QR_NUMERICO](https://github.com/user-attachments/assets/d9fd2dbb-afa2-406d-a294-70e70cf01b49)
+#### QR INVALIDO
+![QR_ALFA](https://github.com/user-attachments/assets/a598307b-2f48-4ef5-ae98-08262b0eea66)
+
 - **Ruta**: `app/src/main/java/dev/rao/rockmarket/home/presentation/scanner/`
 - **Funcionalidad**: Permite escanear códigos QR para ver directamente los detalles de un producto.
 - **Tecnologías específicas**: CameraX, ML Kit para procesamiento de códigos QR.
